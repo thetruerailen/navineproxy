@@ -3,11 +3,25 @@ var net = require('net'),
     socks = require('./socks.js'),
     info = console.log.bind(console);
 
-// Create server
-// The server accepts SOCKS connections. This particular server acts as a proxy.
-var HOST = process.argv[3] || '127.0.0.1',
-    PORT = process.argv[2] || '6868',
-    server = socks.createServer(function(socket, port, address, proxy_ready) {
+const cluster = require('cluster');
+const numCPUs = process.argv[2] ? parseInt(process.argv[2]) : require('os').cpus().length;
+
+if (cluster.isMaster) {
+  // Fork workers.
+  for (var i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`worker ${worker.process.pid} died`);
+  });
+} else {
+  // Workers can share any TCP connection
+  // Create server
+  // The server accepts SOCKS connections. This particular server acts as a proxy.
+  var HOST = process.argv[4] || '0.0.0.0',
+      PORT = process.argv[3] || '6868',
+      server = socks.createServer(function(socket, port, address, proxy_ready) {
 
       // Implement your own proxy here! Do encryption, tunnelling, whatever! Go flippin' mental!
       // I plan to tunnel everything including SSH over an HTTP tunnel. For now, though, here is the plain proxy:
@@ -55,17 +69,12 @@ var HOST = process.argv[3] || '127.0.0.1',
 
     });
 
-server.on('error', function (e) {
-    console.error('SERVER ERROR: %j', e);
-    if (e.code == 'EADDRINUSE') {
-        console.log('Address in use, retrying in 10 seconds...');
-        setTimeout(function () {
-            console.log('Reconnecting to %s:%s', HOST, PORT);
-            server.close();
-            server.listen(PORT, HOST);
-        }, 10000);
-    }
-});
-server.listen(PORT, HOST);
+  server.on('error', function (e) {
+     server.close();
+     server.listen(PORT, HOST);
+  });
+  server.listen(PORT, HOST);
+
+}
 
 // vim: set filetype=javascript syntax=javascript :
