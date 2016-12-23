@@ -46,7 +46,6 @@ var HOST = process.argv[3] || '127.0.0.1',
       socket.on('close', function(had_error) {
         try {
           if (this.proxy !== undefined) {
-            proxy.removeAllListeners('data');
             proxy.end();
           }
           //console.error('The socket %s:%d closed',socket.remoteAddress,socket.remotePort);
