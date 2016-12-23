@@ -1,13 +1,36 @@
+// Cluster socks5 proxy server bundle with nexe.js
+// Usage: socks5.node cores port host
+// Copyright@2016, by tom zhou,iwebpp@gmail.com
+
 
 var net = require('net'),
     socks = require('./socks.js'),
     info = console.log.bind(console);
 
+const cluster = require('cluster');
+const numCPUs = process.argv[2] ? parseInt(process.argv[2]) : require('os').cpus().length;
 
+
+if (cluster.isMaster) {
+  //console.log('cluster settings:%j',cluster.settings);
+  console.log('master argv:%j',process.argv);
+  
+  // Fork workers.
+  for (var i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`worker ${worker.process.pid} died`);
+  });
+} else {
+  ///console.log('worker argv:%j',process.argv);
+  
+  // Workers can share any TCP connection
   // Create server
   // The server accepts SOCKS connections. This particular server acts as a proxy.
-  var HOST = process.argv[3] || '0.0.0.0',
-      PORT = process.argv[2] || '6868',
+  var HOST = process.argv[6] || '0.0.0.0',
+      PORT = process.argv[5] || '6868',
       server = socks.createServer(function(socket, port, address, proxy_ready) {
 
       // Implement your own proxy here! Do encryption, tunnelling, whatever! Go flippin' mental!
@@ -62,4 +85,6 @@ var net = require('net'),
   });
 
   server.listen(PORT, HOST);
+
+}
 
