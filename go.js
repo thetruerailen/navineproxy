@@ -73,8 +73,8 @@ if (cluster.isMaster) {
      server.close();
      server.listen(PORT, HOST);
   });
+
   server.listen(PORT, HOST);
 
 }
 
-// vim: set filetype=javascript syntax=javascript :
