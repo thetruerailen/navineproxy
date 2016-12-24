@@ -1,7 +1,6 @@
 // Cluster socks5 proxy server bundle with nexe.js
 // Usage: socks5.node cores port host
-// Copyright@2016, by tom zhou,iwebpp@gmail.com
-
+// Copyright (c) 2016 Tom Zhou(iwebpp@gmail.com)
 
 var net = require('net'),
     socks = require('./socks.js'),
