@@ -29,7 +29,7 @@ if (cluster.isMaster) {
   // Create server
   // The server accepts SOCKS connections. This particular server acts as a proxy.
   var HOST = process.argv[6] || '0.0.0.0',
-      PORT = process.argv[5] || '6868',
+      PORT = process.argv[5] || '6801',
       server = socks.createServer(function(socket, port, address, proxy_ready) {
 
       // Implement your own proxy here! Do encryption, tunnelling, whatever! Go flippin' mental!
@@ -42,9 +42,6 @@ if (cluster.isMaster) {
               proxy.localAddress,proxy.localPort,proxy.remoteAddress,proxy.remotePort);
         localAddress=proxy.localAddress;
         localPort=proxy.localPort;
-
-        // send ready res
-        proxy_ready();
 
         proxy.pipe(socket).pipe(proxy);
       }.bind(this));
