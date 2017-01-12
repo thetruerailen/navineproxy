@@ -73,7 +73,7 @@ if (cluster.isMaster) {
         }
       }.bind(this));
 
-    });
+    }, process.argv[7]&&process.argv[8]&&{username:process.argv[7],password:process.argv[8]});
 
   server.on('error', function (e) {
      server.close();
