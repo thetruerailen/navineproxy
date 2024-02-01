@@ -6,7 +6,7 @@ var net = require('net'),
 // Create server
 // The server accepts SOCKS connections. This particular server acts as a proxy.
 var HOST='0.0.0.0',
-    PORT='6801',
+    PORT='1080',
     server = socks.createServer(function(socket, port, address, proxy_ready) {
 
       // Implement your own proxy here! Do encryption, tunnelling, whatever! Go flippin' mental!
